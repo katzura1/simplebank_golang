@@ -121,6 +121,7 @@ type UpdateAccountParams struct {
 	Currency string `json:"currency"`
 }
 
+
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, updateAccount,
 		arg.ID,
