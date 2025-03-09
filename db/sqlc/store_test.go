@@ -15,7 +15,7 @@ func TestTransferTx(t *testing.T) {
 	account2 := CreateRandomAccount(t)
 
 	// run and concurrently transfer money between the two accounts
-	n := 2
+	n := 5
 	amount := int64(10)
 
 	errors := make(chan error)             // channel to collect errors
