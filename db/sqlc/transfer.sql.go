@@ -26,9 +26,9 @@ type CreateTransferParams struct {
 	Amount        int64 `json:"amount"`
 }
 
-func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
-	row := q.db.QueryRow(ctx, createTransfer, arg.FromAccountID, arg.ToAccountID, arg.Amount)
-	var i Transfer
+func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfers, error) {
+	row := q.db.QueryRowContext(ctx, createTransfer, arg.FromAccountID, arg.ToAccountID, arg.Amount)
+	var i Transfers
 	err := row.Scan(
 		&i.ID,
 		&i.FromAccountID,
@@ -44,9 +44,9 @@ SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
-	row := q.db.QueryRow(ctx, getTransfer, id)
-	var i Transfer
+func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfers, error) {
+	row := q.db.QueryRowContext(ctx, getTransfer, id)
+	var i Transfers
 	err := row.Scan(
 		&i.ID,
 		&i.FromAccountID,
@@ -73,8 +73,8 @@ type ListTransfersParams struct {
 	Offset        int32 `json:"offset"`
 }
 
-func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error) {
-	rows, err := q.db.Query(ctx, listTransfers,
+func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfers, error) {
+	rows, err := q.db.QueryContext(ctx, listTransfers,
 		arg.FromAccountID,
 		arg.ToAccountID,
 		arg.Limit,
@@ -84,9 +84,9 @@ func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transfer
+	var items []Transfers
 	for rows.Next() {
-		var i Transfer
+		var i Transfers
 		if err := rows.Scan(
 			&i.ID,
 			&i.FromAccountID,
@@ -97,6 +97,9 @@ func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

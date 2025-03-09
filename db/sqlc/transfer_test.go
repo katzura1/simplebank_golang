@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateRandomTransfer(t *testing.T, from Account, to Account) Transfer {
+func CreateRandomTransfer(t *testing.T, from Accounts, to Accounts) Transfers {
 	arg := CreateTransferParams{
 		FromAccountID: from.ID,
 		ToAccountID:   to.ID,
@@ -47,11 +47,11 @@ func TestGetTransfer(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, transfer2)
 
-	require.Equal(t, transfer1.ID, transfer2.ID)                                     // Check if the ID is the same
-	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)               // Check if the account ID is the same
-	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)                   // Check if the account ID is the same
-	require.Equal(t, transfer1.Amount, transfer2.Amount)                             // Check if the amount is the same
-	require.WithinDuration(t, transfer1.CreatedAt.Time, transfer2.CreatedAt.Time, 0) // Check if the created time is the same
+	require.Equal(t, transfer1.ID, transfer2.ID)                           // Check if the ID is the same
+	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)     // Check if the account ID is the same
+	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)         // Check if the account ID is the same
+	require.Equal(t, transfer1.Amount, transfer2.Amount)                   // Check if the amount is the same
+	require.WithinDuration(t, transfer1.CreatedAt, transfer2.CreatedAt, 0) // Check if the created time is the same
 }
 
 func TestListTransfer(t *testing.T) {

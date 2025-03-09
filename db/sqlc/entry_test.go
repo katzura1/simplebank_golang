@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateRandomEntry(t *testing.T, account Account) Entry {
+func CreateRandomEntry(t *testing.T, account Accounts) Entries {
 	arg := CreateEntryParams{
 		AccountID: account.ID,
 		Amount:    util.RandomMoney(), // Random amount
@@ -50,7 +50,7 @@ func TestGetEntry(t *testing.T) {
 	require.Equal(t, entry1.ID, entry2.ID)               // Check if the ID is the same
 	require.Equal(t, entry1.AccountID, entry2.AccountID) // Check if the account ID is the same
 	require.Equal(t, entry1.Amount, entry2.Amount)
-	require.WithinDuration(t, entry1.CreatedAt.Time, entry2.CreatedAt.Time, 0)
+	require.WithinDuration(t, entry1.CreatedAt, entry2.CreatedAt, 0)
 }
 
 func TestListEntry(t *testing.T) {
