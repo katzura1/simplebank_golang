@@ -75,6 +75,8 @@ func TestGetAccountAPI(t *testing.T) {
 					Times(0)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				// printout result of recorder
+				fmt.Println(recorder.Body.String())
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
 			},
 		},
@@ -102,6 +104,46 @@ func TestGetAccountAPI(t *testing.T) {
 			tc.checkResponse(t, recorder)
 		})
 	}
+}
+
+func TestCreateAccountAPI(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	store := mockdb.NewMockStore(ctrl)
+
+	account := randomAccount()
+
+	arg := db.CreateAccountParams{
+		Owner:    account.Owner,
+		Currency: "asdasd", //account.Currency,
+		Balance:  0,
+	}
+	fmt.Println(arg)
+
+	// Marshal body data to JSON
+	data, err := json.Marshal(arg)
+	require.NoError(t, err)
+
+	// store.EXPECT().
+	// 	CreateAccount(gomock.Any(), gomock.Eq(arg)).
+	// 	Times(1).
+	// 	Return(account, nil)
+	store.EXPECT().
+		CreateAccount(gomock.Any(), gomock.Eq(arg)).
+		Times(0)
+
+	server := NewServer(store)
+	recorder := httptest.NewRecorder()
+
+	url := "/accounts"
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+	require.NoError(t, err)
+
+	server.router.ServeHTTP(recorder, request)
+	fmt.Println(recorder.Body.String())
+	require.Equal(t, http.StatusBadRequest, recorder.Code)
+	// print out result of recorder
+
 }
 
 func randomAccount() db.Accounts {
