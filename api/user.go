@@ -50,7 +50,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
-			// fmt.Println(pqErr.Code.Name())
+			// fmt.Println(pqErr.Code)
 			switch pqErr.Code.Name() {
 			case "unique_violation":
 				ctx.JSON(http.StatusForbidden, errorResponse(err))
