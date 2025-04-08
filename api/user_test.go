@@ -152,7 +152,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				// why we expect 0 time call, because if the email is invalid, we don't call the store
+				// why we expect 0 time call, because if the password is invalid, we don't call the store
 				// so we don't need to call the store
 
 				store.EXPECT().
