@@ -92,7 +92,7 @@ func TestGetAccountAPI(t *testing.T) {
 			// build stubs
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprintf("/accounts/%d", tc.accountID)
@@ -132,7 +132,7 @@ func TestCreateAccountAPI(t *testing.T) {
 		CreateAccount(gomock.Any(), gomock.Eq(arg)).
 		Times(0)
 
-	server := NewServer(store)
+	server := newTestServer(t, store)
 	recorder := httptest.NewRecorder()
 
 	url := "/accounts"

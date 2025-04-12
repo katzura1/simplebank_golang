@@ -1,7 +1,10 @@
 package api
 
 import (
+	"fmt"
 	db "simplebank/db/sqlc"
+	"simplebank/token"
+	"simplebank/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -10,13 +13,25 @@ import (
 
 // Serve server http request for api
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
 // NewServer create a new server
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
+
+	server := &Server{
+		config:     config,
+		store:      store,
+		tokenMaker: tokenMaker,
+	}
+
 	router := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -24,6 +39,7 @@ func NewServer(store db.Store) *Server {
 	}
 
 	router.POST("/users", server.createUser)
+	router.POST("/users/login", server.loginUser)
 
 	router.POST("/accounts", server.createAccount)
 	router.GET("/accounts/:ids", server.getAccount)
@@ -32,7 +48,7 @@ func NewServer(store db.Store) *Server {
 	router.POST("/transfers", server.transferTx)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 // Starts run the HTTP server on a specific address
